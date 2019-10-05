@@ -8,7 +8,7 @@
  *
  * https://github.com/cwtickle/danoniplus-converter
  */
-const g_version = `Ver 0.1.0`;
+const g_version = `Ver 0.2.0`;
 
 let g_rawData = ``;
 const g_keyObj = {
@@ -53,6 +53,15 @@ g_keyObj.cCom[23] = 24;
 g_keyObj.cCom[34] = 36;
 g_keyObj.cCom[35] = 37;
 g_keyObj.cCom[36] = 34;
+g_keyObj.cCom[37] = 35;
+g_keyObj.cCom[44] = 46;
+g_keyObj.cCom[45] = 47;
+g_keyObj.cCom[46] = 52;
+g_keyObj.cCom[47] = 45;
+g_keyObj.cCom[52] = 53;
+g_keyObj.cCom[53] = 52;
+g_keyObj.cCom[57] = 58;
+g_keyObj.cCom[58] = 57;
 
 // [0, 2, 4, 6, 3] => [0, 1, 2, 3, 4]
 g_keyObj.c5[0] = 0;

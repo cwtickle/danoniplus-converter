@@ -1,6 +1,7 @@
 `use strict`;
 /**
- * Dancing☆Onigiri (CW Edition) dos-converter
+ * Dancing☆Onigiri (CW Edition) 
+ * ChartConverter
  *
  * Source by tickle
  * Created : 2018/10/05

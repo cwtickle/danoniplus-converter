@@ -9,7 +9,7 @@
  *
  * https://github.com/cwtickle/danoniplus-converter
  */
-const g_version = `Ver 0.2.0`;
+const g_version = `Ver 0.3.2`;
 
 let g_rawData = ``;
 const g_keyObj = {
@@ -127,7 +127,7 @@ const main = () => {
     const droparea = document.getElementById('droparea');
 
     droparea.textContent = 'ここにdos.txtをドロップ'
-    document.getElementById('version').textContent = 'v0.1.0';
+    document.getElementById('version').textContent = g_version;
 
     droparea.addEventListener('dragover', event => {
         event.preventDefault();

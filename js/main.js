@@ -351,7 +351,7 @@ const convertHeader = (_rootObj) => {
                             continue;
                         }
 
-                        g_rawData += `${tmpColorData[k]},${convertColorNo(obj.keyLabels[j], parseFloat(tmpColorData[k + 1]))},${tmpColorData[k + 2]}\r\n`;
+                        g_rawData += `${tmpColorData[k]},${convertColorNo(obj.keyLabels[j], parseFloat(tmpColorData[k + 1]))},${tmpColorData[k + 2].replace(`0x`, `#`)}\r\n`;
                     }
                 }
             });
@@ -373,7 +373,7 @@ const convertHeader = (_rootObj) => {
                             continue;
                         }
 
-                        g_rawData += `${tmpColorData[k]},${convertColorNo(obj.keyLabels[j], parseFloat(tmpColorData[k + 1]))},${tmpColorData[k + 2]}\r\n`;
+                        g_rawData += `${tmpColorData[k]},${convertColorNo(obj.keyLabels[j], parseFloat(tmpColorData[k + 1]))},${tmpColorData[k + 2].replace(`0x`, `#`)}\r\n`;
                     }
                 }
             });

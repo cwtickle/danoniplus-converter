@@ -209,6 +209,7 @@ const convertHeader = (_rootObj) => {
                 g_rawData += `$`;
             }
         }
+        g_rawData += `|`;
     }
 
     for (let j = 0; j < difs.length; j++) {

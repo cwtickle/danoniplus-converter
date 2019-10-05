@@ -213,10 +213,33 @@ const convertHeader = (_rootObj) => {
     for (let j = 0; j < difs.length; j++) {
         const idHeader = (j === 0 ? `` : (j + 1));
 
+        // 個別色変化
         if (_rootObj[`color${idHeader}_data`] !== undefined) {
             g_rawData += `|color${idHeader}_data=\r\n`;
 
             let tmpArrayData = _rootObj[`color${idHeader}_data`].split(`\r`).join(`\n`);
+            tmpArrayData = tmpArrayData.split(`\n`);
+            tmpArrayData.forEach(tmpData => {
+                if (tmpData !== undefined && tmpData !== ``) {
+                    const tmpColorData = tmpData.split(`,`);
+                    for (let k = 0; k < tmpColorData.length; k += 3) {
+                        if (isNaN(parseInt(tmpColorData[k]))) {
+                            continue;
+                        }
+
+                        g_rawData += `${tmpColorData[k]},${convertColorNo(obj.keyLabels[j], parseFloat(tmpColorData[k + 1]))},${tmpColorData[k + 2]}\r\n`;
+                    }
+                }
+            });
+
+            g_rawData += `|`;
+        }
+
+        // 全体色変化
+        if (_rootObj[`acolor${idHeader}_data`] !== undefined) {
+            g_rawData += `|acolor${idHeader}_data=\r\n`;
+
+            let tmpArrayData = _rootObj[`acolor${idHeader}_data`].split(`\r`).join(`\n`);
             tmpArrayData = tmpArrayData.split(`\n`);
             tmpArrayData.forEach(tmpData => {
                 if (tmpData !== undefined && tmpData !== ``) {

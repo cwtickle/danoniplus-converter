@@ -1,4 +1,4 @@
-# Dancing☆Onigiri DosConverter
+# Dancing☆Onigiri ChartConverter
 Dancing☆Onigiri (CW Edition) の譜面コンバーター
 
 ## How to Use

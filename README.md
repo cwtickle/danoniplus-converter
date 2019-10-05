@@ -1,4 +1,4 @@
-# danoniplus-converter
+# Dancing☆Onigiri DosConverter
 Dancing☆Onigiri (CW Edition) の譜面コンバーター
 
 ## How to Use

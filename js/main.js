@@ -164,7 +164,85 @@ g_keyObj.c13[8] = 10;
 g_keyObj.c13[9] = 11;
 g_keyObj.c13[10] = 12;
 
+g_keyObj.c14[7] = 0;
+g_keyObj.c14[8] = 1;
+g_keyObj.c14[9] = 2;
+g_keyObj.c14[10] = 3;
+g_keyObj.c14[11] = 4;
+g_keyObj.c14[12] = 5;
+g_keyObj.c14[13] = 6;
+g_keyObj.c14[0] = 7;
+g_keyObj.c14[1] = 8;
+g_keyObj.c14[2] = 9;
+g_keyObj.c14[3] = 10;
+g_keyObj.c14[4] = 11;
+g_keyObj.c14[5] = 12;
+g_keyObj.c14[6] = 13;
 
+g_keyObj.c14i[7] = 0;
+g_keyObj.c14i[8] = 1;
+g_keyObj.c14i[9] = 2;
+g_keyObj.c14i[10] = 3;
+g_keyObj.c14i[11] = 4;
+g_keyObj.c14i[12] = 5;
+g_keyObj.c14i[13] = 6;
+g_keyObj.c14i[0] = 7;
+g_keyObj.c14i[1] = 8;
+g_keyObj.c14i[2] = 9;
+g_keyObj.c14i[3] = 10;
+g_keyObj.c14i[4] = 11;
+g_keyObj.c14i[5] = 12;
+g_keyObj.c14i[6] = 13;
+
+// [7, 8, 9, 10, 11, 12, 13, 14, 0, 1, 2, 3, 4, 5, 6] => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+g_keyObj.c15A[7] = 0;
+g_keyObj.c15A[8] = 1;
+g_keyObj.c15A[9] = 2;
+g_keyObj.c15A[10] = 3;
+g_keyObj.c15A[11] = 4;
+g_keyObj.c15A[12] = 5;
+g_keyObj.c15A[13] = 6;
+g_keyObj.c15A[14] = 7;
+g_keyObj.c15A[0] = 8;
+g_keyObj.c15A[1] = 9;
+g_keyObj.c15A[2] = 10;
+g_keyObj.c15A[3] = 11;
+g_keyObj.c15A[4] = 12;
+g_keyObj.c15A[5] = 13;
+g_keyObj.c15A[6] = 14;
+
+g_keyObj.c15B[7] = 0;
+g_keyObj.c15B[8] = 1;
+g_keyObj.c15B[9] = 2;
+g_keyObj.c15B[10] = 3;
+g_keyObj.c15B[11] = 4;
+g_keyObj.c15B[12] = 5;
+g_keyObj.c15B[13] = 6;
+g_keyObj.c15B[14] = 7;
+g_keyObj.c15B[0] = 8;
+g_keyObj.c15B[1] = 9;
+g_keyObj.c15B[2] = 10;
+g_keyObj.c15B[3] = 11;
+g_keyObj.c15B[4] = 12;
+g_keyObj.c15B[5] = 13;
+g_keyObj.c15B[6] = 14;
+
+g_keyObj.c16i[9] = 0;
+g_keyObj.c16i[10] = 1;
+g_keyObj.c16i[11] = 2;
+g_keyObj.c16i[12] = 3;
+g_keyObj.c16i[13] = 4;
+g_keyObj.c16i[14] = 5;
+g_keyObj.c16i[15] = 6;
+g_keyObj.c16i[0] = 7;
+g_keyObj.c16i[1] = 8;
+g_keyObj.c16i[2] = 9;
+g_keyObj.c16i[3] = 10;
+g_keyObj.c16i[4] = 11;
+g_keyObj.c16i[5] = 12;
+g_keyObj.c16i[6] = 13;
+g_keyObj.c16i[7] = 14;
+g_keyObj.c16i[8] = 15;
 
 // 初期化・イベントの設定
 const main = () => {

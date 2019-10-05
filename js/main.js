@@ -36,6 +36,14 @@ g_keyObj.c9A = [];
 g_keyObj.c9B = [];
 g_keyObj.c11 = [];
 g_keyObj.c11L = [];
+g_keyObj.c12 = [];
+g_keyObj.c13 = [];
+g_keyObj.c14 = [];
+g_keyObj.c14i = [];
+g_keyObj.c15A = [];
+g_keyObj.c15B = [];
+g_keyObj.c16i = [];
+g_keyObj.c17 = [];
 for (let j = 0; j < 62; j++) {
     g_keyObj.c5[j] = j;
     g_keyObj.c7[j] = j;
@@ -45,6 +53,14 @@ for (let j = 0; j < 62; j++) {
     g_keyObj.c9B[j] = j;
     g_keyObj.c11[j] = j;
     g_keyObj.c11L[j] = j;
+    g_keyObj.c12[j] = j;
+    g_keyObj.c13[j] = j;
+    g_keyObj.c14[j] = j;
+    g_keyObj.c14i[j] = j;
+    g_keyObj.c15A[j] = j;
+    g_keyObj.c15B[j] = j;
+    g_keyObj.c16i[j] = j;
+    g_keyObj.c17[j] = j;
     g_keyObj.cCom[j] = j;
 }
 
@@ -83,7 +99,6 @@ g_keyObj.c9A[9] = 7;
 g_keyObj.c9A[10] = 8;
 
 // [0, 2, 4, 6, 3, 7, 8, 9, 10] => [0, 1, 2, 3, 4, 5, 6, 7, 8]
-g_keyObj.c9B = [];
 g_keyObj.c9B[0] = 0;
 g_keyObj.c9B[2] = 1;
 g_keyObj.c9B[4] = 2;
@@ -95,7 +110,6 @@ g_keyObj.c9B[9] = 7;
 g_keyObj.c9B[10] = 8;
 
 // [7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6] => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-g_keyObj.c11 = [];
 g_keyObj.c11[7] = 0;
 g_keyObj.c11[8] = 1;
 g_keyObj.c11[9] = 2;
@@ -109,7 +123,6 @@ g_keyObj.c11[5] = 9;
 g_keyObj.c11[6] = 10;
 
 // [7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6] => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-g_keyObj.c11L = [];
 g_keyObj.c11L[7] = 0;
 g_keyObj.c11L[8] = 1;
 g_keyObj.c11L[9] = 2;
@@ -121,6 +134,37 @@ g_keyObj.c11L[3] = 7;
 g_keyObj.c11L[4] = 8;
 g_keyObj.c11L[5] = 9;
 g_keyObj.c11L[6] = 10;
+
+// [8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6] => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+g_keyObj.c12[8] = 0;
+g_keyObj.c12[9] = 1;
+g_keyObj.c12[10] = 2;
+g_keyObj.c12[11] = 3;
+g_keyObj.c12[0] = 4;
+g_keyObj.c12[1] = 5;
+g_keyObj.c12[2] = 6;
+g_keyObj.c12[3] = 7;
+g_keyObj.c12[4] = 8;
+g_keyObj.c12[5] = 9;
+g_keyObj.c12[6] = 10;
+g_keyObj.c12[7] = 11;
+
+// [11, 12, 13, 14, 0, 2, 4, 6, 3, 7, 8, 9, 10] => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+g_keyObj.c13[11] = 0;
+g_keyObj.c13[12] = 1;
+g_keyObj.c13[13] = 2;
+g_keyObj.c13[14] = 3;
+g_keyObj.c13[0] = 4;
+g_keyObj.c13[2] = 5;
+g_keyObj.c13[4] = 6;
+g_keyObj.c13[6] = 7;
+g_keyObj.c13[3] = 8;
+g_keyObj.c13[7] = 9;
+g_keyObj.c13[8] = 10;
+g_keyObj.c13[9] = 11;
+g_keyObj.c13[10] = 12;
+
+
 
 // 初期化・イベントの設定
 const main = () => {

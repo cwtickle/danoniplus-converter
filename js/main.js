@@ -27,7 +27,9 @@ const g_keyObj = {
     }
 };
 
+g_colorFlg = `current`;
 g_keyObj.cCom = [];
+g_keyObj.cComOld = [];
 g_keyObj.c5 = [];
 g_keyObj.c7 = [];
 g_keyObj.c7i = [];
@@ -62,6 +64,7 @@ for (let j = 0; j < 62; j++) {
     g_keyObj.c16i[j] = j;
     g_keyObj.c17[j] = j;
     g_keyObj.cCom[j] = j;
+    g_keyObj.cComOld[j] = j;
 }
 
 g_keyObj.cCom[21] = 22;
@@ -79,6 +82,12 @@ g_keyObj.cCom[52] = 53;
 g_keyObj.cCom[53] = 52;
 g_keyObj.cCom[57] = 58;
 g_keyObj.cCom[58] = 57;
+
+g_keyObj.cComOld[11] = 60;
+g_keyObj.cComOld[12] = 61;
+g_keyObj.cComOld[13] = 20;
+g_keyObj.cComOld[14] = 21;
+g_keyObj.cComOld[15] = 23;
 
 // [0, 2, 4, 6, 3] => [0, 1, 2, 3, 4]
 g_keyObj.c5[0] = 0;
@@ -281,10 +290,13 @@ const dosConvert = (_dos) => {
         if (pos > 0) {
             const pKey = params[j].substring(0, pos);
             const pValue = params[j].substring(pos + 1);
-            if (pKey === `difStep` || pKey === `difName` || pKey === `speedlock` || pKey === `difData` ||
+            if (pKey === `difStep` || pKey === `difName` || pKey === `speedlock` ||
                 (pKey.substring(0, 5) === `color` && pKey.endsWith(`_data`)) ||
                 (pKey.substring(0, 6) === `acolor` && pKey.endsWith(`_data`))) {
                 obj[pKey] = pValue;
+            } else if (pKey === `difData`) {
+                obj[pKey] = pValue;
+                g_rawData += `|${params[j]}|\r\n`;
             } else {
                 g_rawData += `|${params[j]}|\r\n`;
             }
@@ -295,7 +307,11 @@ const dosConvert = (_dos) => {
 
 // カラーNoの変換
 const convertColorNo = (_key, _no) => {
-    return (_no < 20 ? g_keyObj[`c${_key}`][_no] : g_keyObj.cCom[_no]);
+    if (g_colorFlg === `current`) {
+        return (_no < 20 ? g_keyObj[`c${_key}`][_no] : g_keyObj.cCom[_no]);
+    } else {
+        return (_no < 11 ? g_keyObj[`c${_key}`][_no] : g_keyObj.cComOld[_no]);
+    }
 }
 
 // 抽出したデータのみ変換処理を掛ける
@@ -386,6 +402,13 @@ const convertHeader = (_rootObj) => {
 
 // ファイルごとの変換処理
 const convert = file => {
+    const colorFlg = document.options.colorFlg;
+    if (colorFlg[0].checked) {
+        g_colorFlg = `current`;
+    } else if (colorFlg[1].checked) {
+        g_colorFlg = `old`;
+    }
+
     const reader = new FileReader();
 
     reader.onload = () => {

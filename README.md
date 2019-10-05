@@ -7,9 +7,10 @@ Dancing☆Onigiri (CW Edition) の譜面コンバーター
 - musicUrlは追加されないので、個別に追加してください。（重要）
 
 ## About Converter
-1. 譜面ヘッダーの古い記述を変換 (difStep, difName, speedlock => difData)
-2. 個別/全体色変化の色番号変換 (ParaFla版 => CW Edition版)
-3. キー数の自動変換 (DP => 9A, 9 => 9Bなど)
+1. 譜面データの"&amp;"区切りを"|"区切りに一斉置き換え
+2. 譜面ヘッダーの古い記述を変換 (difStep, difName, speedlock => difData)
+3. 個別/全体色変化の色番号変換 (ParaFla版 => CW Edition版)
+4. キー数の自動変換 (DP => 9A, 9 => 9Bなど)
 
 ## Special Thanks
 - すずめ( @suzme )

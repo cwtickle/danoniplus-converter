@@ -1,5 +1,5 @@
 # Dancing☆Onigiri ChartConverter
-Dancing☆Onigiri (CW Edition) の譜面コンバーター
+[Dancing☆Onigiri (CW Edition)](../../../danoniplus/) の譜面コンバーター
 
 ## How to Use
 - [このページにアクセス](https://cwtickle.github.io/danoniplus-converter/index.html)し、譜面ファイル(dos.txtなど)をボックスに入れると  

@@ -22,7 +22,7 @@ body {
 
 .droparea {
   width: 100%;
-  height: 100%;
+  height: 90%;
   border: 32px solid var(--color1);
   font-size: 5vw;
 

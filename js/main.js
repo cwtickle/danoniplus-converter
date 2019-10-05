@@ -381,6 +381,7 @@ const convertHeader = (_rootObj) => {
             g_rawData += `|`;
         }
     }
+    g_rawData = g_rawData.replace(/'/g, `&#39;`);
 }
 
 // ファイルごとの変換処理

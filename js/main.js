@@ -9,7 +9,7 @@
  *
  * https://github.com/cwtickle/danoniplus-converter
  */
-const g_version = `Ver 0.6.0`;
+const g_version = `Ver 1.0.0`;
 
 let g_rawData = ``;
 const g_keyObj = {

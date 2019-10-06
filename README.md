@@ -1,8 +1,9 @@
-# Dancing☆Onigiri ChartConverter
+# Dancing☆Onigiri Chart Converter
 [Dancing☆Onigiri (CW Edition)](../../../danoniplus/) の譜面コンバーター
 
 ## How to Use
-- [このページにアクセス](https://cwtickle.github.io/danoniplus-converter/index.html)し、譜面ファイル(dos.txtなど)をボックスに入れると  
+- [このページにアクセス](https://cwtickle.github.io/danoniplus-converter/index.html)し、
+ParaFlaソースで使用していた譜面ファイル(dos.txtなど)をボックスに入れると  
 外部読込用の譜面データが自動で生成されます。
 - musicUrlは追加されないので、個別に追加してください。（重要）
 - キー数を参照するため最低限「difStep」「difData」といったキー数情報を譜面ファイルに入れてください。  

@@ -5,11 +5,11 @@
  *
  * Source by tickle
  * Created : 2018/10/05
- * Revised : 2019/10/05
+ * Revised : 2019/10/10
  *
  * https://github.com/cwtickle/danoniplus-converter
  */
-const g_version = `Ver 1.0.0`;
+const g_version = `Ver 1.1.0`;
 
 let g_rawData = ``;
 const g_keyObj = {

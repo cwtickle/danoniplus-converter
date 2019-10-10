@@ -415,11 +415,10 @@ const convert = file => {
         const rootObj = dosConvert(reader.result);
         convertHeader(rootObj);
 
-        const externalDos = `
-        function externalDosInit() {
+        const externalDos = `function externalDosInit() {
 
-          g_externalDos = \`\r\n${g_rawData}
-          \`;
+          g_externalDos = \`\r\n${g_rawData}\r\n|adjustment=0|\r\n|titlesize=|
+          \`;\r\n\}
         `;
         const file = new Blob([externalDos], {
             type: `text/plain;charset=utf-8`

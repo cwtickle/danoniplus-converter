@@ -27,7 +27,8 @@ const g_keyObj = {
     }
 };
 
-g_colorFlg = `current`;
+let g_colorFlg = `current`;
+let g_encodeFlg = `shift-jis`;
 g_keyObj.cCom = [];
 g_keyObj.cComOld = [];
 g_keyObj.c5 = [];
@@ -287,38 +288,76 @@ const findPos = (_dos, _start, _end) => {
         const searchText = _dos.toLowerCase().slice(searchIndex);
         const searchLastIndex = searchText.indexOf(_end);
         if (searchLastIndex !== -1) {
-            return [searchIndex, searchIndex + searchLastIndex + 1];
+            return [searchIndex, searchIndex + searchLastIndex + _end.length];
         }
     }
     return [-1, -1];
 }
+
+// 旧記述を新記述へ置換
+const replaceStr = (_str, _org, _terms, _replaceStr) =>
+    _str.split(_org.slice(_terms[0], _terms[1])).join(_replaceStr);
 
 // ファイルよりdos分解
 const dosConvert = (_dos) => {
     g_rawData = ``;
     const obj = {};
 
-    if (_dos[0] === `<`) {
+    if (findPos(_dos, `<h`, `>`)[0] !== -1) {
 
         // embedタグを探して一括置き換え
-        const embedPos = findPos(_dos, `<embed src=`, `>`);
-        if (embedPos[0] !== -1) {
-            const html5Key = `
-                <input type="hidden" name="externalDos" id="externalDos" value="dos_js.txt">
-                <div id="canvas-frame" style="width:600px"></div>
+        const embedPos = findPos(_dos, `<embed `, `>`);
+        const objectPos = findPos(_dos, `<object`, `</object>`);
+        const html5Pos = findPos(_dos, `<!doctype html`, `>`);
+        const headPos = findPos(_dos, `<head>`, `</head>`);
+        const metaPos = findPos(_dos, `<meta `, `>`);
+
+        const html5Doc = `<!DOCTYPE html>
+            `;
+        const html5Key = `
+            <input type="hidden" name="externalDos" id="externalDos" value="dos_js.txt">
+            <div id="canvas-frame" style="width:600px"></div>
                 `;
-            const mainjs = `
-                <script src="../js/danoni_main.js" charset="UTF-8"></script>
-                <link rel="stylesheet" type="text/css" href="../css/danoni_main.css">
-            </head>
+        const mainjs = `
+            <script src="../js/danoni_main.js" charset="UTF-8"></script>
+            <link rel="stylesheet" type="text/css" href="../css/danoni_main.css">
+        </head>
                 `;
-            obj.html5Text = _dos.split(_dos.slice(embedPos[0], embedPos[1])).join(html5Key);
-            obj.html5Text = obj.html5Text.split(`</head>`).join(mainjs);
-            obj.html5Text = obj.html5Text.split(`shift_jis`).join(`utf-8`);
-            obj.html5Text = obj.html5Text.split(`Shift_JIS`).join(`utf-8`);
-            obj.html5Text = obj.html5Text.split(`Shift_Jis`).join(`utf-8`);
-            g_rawData += obj.html5Text;
+        const meta = `<meta charset="utf-8">`;
+        const metaWithHeader = `<head>
+            ${meta}`;
+        const mainjsWithHeader = `${metaWithHeader}
+            <title>Dancing Onigiri</title>
+            ${mainjs}`;
+
+        obj.html5Text = _dos;
+
+        // embedタグ、objectタグを変換
+        if (objectPos[0] !== -1) {
+            obj.html5Text = replaceStr(obj.html5Text, _dos, objectPos, html5Key);
+        } else if (embedPos[0] !== -1) {
+            obj.html5Text = replaceStr(obj.html5Text, _dos, embedPos, html5Key);
         }
+
+        // header内のmetaタグをutf-8に変換し、scriptタグ、linkタグを追加
+        if (headPos[0] !== -1) {
+            obj.html5Text = obj.html5Text.split(`</head>`).join(mainjs);
+            if (metaPos[0] !== -1) {
+                obj.html5Text = replaceStr(obj.html5Text, _dos, metaPos, meta);
+            } else {
+                obj.html5Text = obj.html5Text.split(`<head>`).join(metaWithHeader);
+            }
+        } else {
+            obj.html5Text = `${mainjsWithHeader}${obj.html5Text}`;
+        }
+
+        // HTML5用のDOCTYPEに置き換え
+        if (html5Pos[0] !== -1) {
+            obj.html5Text = obj.html5Text.split(_dos.slice(html5Pos[0], html5Pos[1])).join(html5Doc);
+        } else {
+            obj.html5Text = `${html5Doc}${obj.html5Text}`;
+        }
+        g_rawData += obj.html5Text;
 
     } else {
         const params = _dos.split(`&`);
@@ -447,6 +486,15 @@ const convert = file => {
         g_colorFlg = `old`;
     }
 
+    const encodeFlg = document.options.encodeFlg;
+    if (encodeFlg[0].checked) {
+        g_encodeFlg = `shift-jis`;
+    } else if (encodeFlg[1].checked) {
+        g_encodeFlg = `euc-jp`;
+    } else if (encodeFlg[2].checked) {
+        g_encodeFlg = `utf-8`;
+    }
+
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -492,7 +540,7 @@ const convert = file => {
         a.click();
     }
 
-    reader.readAsText(file, `shift-jis`);
+    reader.readAsText(file, g_encodeFlg);
 }
 
 document.addEventListener('DOMContentLoaded', main);

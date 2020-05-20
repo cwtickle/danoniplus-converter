@@ -280,25 +280,63 @@ const main = () => {
     });
 }
 
+// タグ検索
+const findPos = (_dos, _start, _end) => {
+    const searchIndex = _dos.toLowerCase().indexOf(_start);
+    if (searchIndex !== -1) {
+        const searchText = _dos.toLowerCase().slice(searchIndex);
+        const searchLastIndex = searchText.indexOf(_end);
+        if (searchLastIndex !== -1) {
+            return [searchIndex, searchIndex + searchLastIndex + 1];
+        }
+    }
+    return [-1, -1];
+}
+
 // ファイルよりdos分解
 const dosConvert = (_dos) => {
     g_rawData = ``;
     const obj = {};
-    const params = _dos.split(`&`);
-    for (let j = 0; j < params.length; j++) {
-        const pos = params[j].indexOf(`=`);
-        if (pos > 0) {
-            const pKey = params[j].substring(0, pos);
-            const pValue = params[j].substring(pos + 1);
-            if (pKey === `difStep` || pKey === `difName` || pKey === `speedlock` ||
-                (pKey.substring(0, 5) === `color` && pKey.endsWith(`_data`)) ||
-                (pKey.substring(0, 6) === `acolor` && pKey.endsWith(`_data`))) {
-                obj[pKey] = pValue;
-            } else if (pKey === `difData`) {
-                obj[pKey] = pValue;
-                g_rawData += `|${params[j]}|\r\n`;
-            } else {
-                g_rawData += `|${params[j]}|\r\n`;
+
+    if (_dos[0] === `<`) {
+
+        // embedタグを探して一括置き換え
+        const embedPos = findPos(_dos, `<embed src=`, `>`);
+        if (embedPos[0] !== -1) {
+            const html5Key = `
+                <input type="hidden" name="externalDos" id="externalDos" value="dos_js.txt">
+                <div id="canvas-frame" style="width:600px"></div>
+                `;
+            const mainjs = `
+                <script src="../js/danoni_main.js" charset="UTF-8"></script>
+                <link rel="stylesheet" type="text/css" href="../css/danoni_main.css">
+            </head>
+                `;
+            obj.html5Text = _dos.split(_dos.slice(embedPos[0], embedPos[1])).join(html5Key);
+            obj.html5Text = obj.html5Text.split(`</head>`).join(mainjs);
+            obj.html5Text = obj.html5Text.split(`shift_jis`).join(`utf-8`);
+            obj.html5Text = obj.html5Text.split(`Shift_JIS`).join(`utf-8`);
+            obj.html5Text = obj.html5Text.split(`Shift_Jis`).join(`utf-8`);
+            g_rawData += obj.html5Text;
+        }
+
+    } else {
+        const params = _dos.split(`&`);
+        for (let j = 0; j < params.length; j++) {
+            const pos = params[j].indexOf(`=`);
+            if (pos > 0) {
+                const pKey = params[j].substring(0, pos);
+                const pValue = params[j].substring(pos + 1);
+                if (pKey === `difStep` || pKey === `difName` || pKey === `speedlock` ||
+                    (pKey.substring(0, 5) === `color` && pKey.endsWith(`_data`)) ||
+                    (pKey.substring(0, 6) === `acolor` && pKey.endsWith(`_data`))) {
+                    obj[pKey] = pValue;
+                } else if (pKey === `difData`) {
+                    obj[pKey] = pValue;
+                    g_rawData += `|${params[j]}|\r\n`;
+                } else {
+                    g_rawData += `|${params[j]}|\r\n`;
+                }
             }
         }
     }
@@ -413,22 +451,39 @@ const convert = file => {
 
     reader.onload = () => {
         const rootObj = dosConvert(reader.result);
-        convertHeader(rootObj);
+        let file;
+        let a;
 
-        const externalDos = `function externalDosInit() {
+        if (rootObj.html5Text === undefined) {
+            convertHeader(rootObj);
 
-          g_externalDos = \`\r\n${g_rawData}\r\n|adjustment=0|\r\n|titlesize=|
+            const externalDos = `function externalDosInit() {
+
+          g_externalDos = \`\r\n${g_rawData}\r\n|adjustment=0|\r\n|titlesize=|\r\n|musicUrl=nosound.mp3|
           \`;\r\n\}
         `;
-        const file = new Blob([externalDos], {
-            type: `text/plain;charset=utf-8`
-        });
+            file = new Blob([externalDos], {
+                type: `text/plain;charset=utf-8`
+            });
 
-        // 見えないダウンロードリンクを作る
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(file);
-        a.download = `dos_js.txt`;
-        a.style.display = 'none';
+            // 見えないダウンロードリンクを作る
+            a = document.createElement('a');
+            a.href = URL.createObjectURL(file);
+            a.download = `dos_js.txt`;
+            a.style.display = 'none';
+
+        } else {
+            const externalHtml = `${g_rawData}`;
+            file = new Blob([externalHtml], {
+                type: `text/html;charset=utf-8`
+            });
+
+            // 見えないダウンロードリンクを作る
+            a = document.createElement('a');
+            a.href = URL.createObjectURL(file);
+            a.download = `danoni.html`;
+            a.style.display = 'none';
+        }
 
         // DOMツリーに存在しないとFirefox等でダウンロードできない
         document.body.appendChild(a);

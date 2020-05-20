@@ -258,7 +258,7 @@ g_keyObj.c16i[8] = 15;
 const main = () => {
     const droparea = document.getElementById('droparea');
 
-    droparea.textContent = 'ここにdos.txtをドロップ'
+    droparea.textContent = '譜面ファイル/HTMLファイルをドロップ';
     document.getElementById('version').textContent = g_version;
 
     droparea.addEventListener('dragover', event => {

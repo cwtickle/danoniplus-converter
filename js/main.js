@@ -310,6 +310,9 @@ const dosConvert = (_dos) => {
         const objectPos = findPos(_dos, `<object`, `</object>`);
         const html5Pos = findPos(_dos, `<!doctype html`, `>`);
         const headPos = findPos(_dos, `<head>`, `</head>`);
+        const headStartPos = findPos(_dos, `<head`, `>`);
+        const headEndPos = findPos(_dos, `</head`, `>`);
+        const embedEndPos = findPos(_dos, `</embed`, `>`);
         const metaPos = findPos(_dos, `<meta `, `>`);
 
         const html5Doc = `<!DOCTYPE html>
@@ -337,15 +340,18 @@ const dosConvert = (_dos) => {
             obj.html5Text = replaceStr(obj.html5Text, _dos, objectPos, html5Key);
         } else if (embedPos[0] !== -1) {
             obj.html5Text = replaceStr(obj.html5Text, _dos, embedPos, html5Key);
+            if (embedEndPos[0] !== -1) {
+                obj.html5Text = replaceStr(obj.html5Text, _dos, embedEndPos, ``);
+            }
         }
 
         // header内のmetaタグをutf-8に変換し、scriptタグ、linkタグを追加
         if (headPos[0] !== -1) {
-            obj.html5Text = obj.html5Text.split(`</head>`).join(mainjs);
+            obj.html5Text = replaceStr(obj.html5Text, _dos, headEndPos, mainjs);
             if (metaPos[0] !== -1) {
                 obj.html5Text = replaceStr(obj.html5Text, _dos, metaPos, meta);
             } else {
-                obj.html5Text = obj.html5Text.split(`<head>`).join(metaWithHeader);
+                obj.html5Text = replaceStr(obj.html5Text, _dos, headStartPos, mainjsWithHeader);
             }
         } else {
             obj.html5Text = `${mainjsWithHeader}${obj.html5Text}`;

@@ -30,6 +30,12 @@ const g_keyObj = {
 let g_colorFlg = `current`;
 let g_encodeFlg = `shift-jis`;
 let g_centerFlg = `center`;
+const g_nameObj = {
+    html: `danoni.html`,
+    dos: `dos_js.txt`,
+    music: `nosound.mp3`,
+};
+
 g_keyObj.cCom = [];
 g_keyObj.cComOld = [];
 g_keyObj.c5 = [];
@@ -389,7 +395,7 @@ const htmlConvert = (_dos) => {
     const html5Doc = `<!DOCTYPE html>
             `;
     const html5Key = `
-            <input type="hidden" name="externalDos" id="externalDos" value="dos_js.txt">
+            <input type="hidden" name="externalDos" id="externalDos" value="${g_nameObj.dos}">
             <div id="canvas-frame" style="width:600px"></div>
                 `;
     const mainjs = `
@@ -587,6 +593,21 @@ const convert = file => {
         g_centerFlg = `left`;
     }
 
+    if (document.querySelector(`#htmlName`).value !== ``) {
+        g_nameObj.html = `${document.querySelector(`#htmlName`).value}.html`;
+    }
+    if (document.querySelector(`#dosName`).value !== ``) {
+        g_nameObj.dos = `${document.querySelector(`#dosName`).value}.txt`;
+    }
+    if (document.querySelector(`#musicName`).value !== ``) {
+        g_nameObj.music = `${document.querySelector(`#musicName`).value}.`;
+        if (document.querySelector(`#musicExtension`).value !== ``) {
+            g_nameObj.music += `${document.querySelector(`#musicExtension`).value}`;
+        } else {
+            g_nameObj.music += `mp3`;
+        }
+    }
+
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -599,7 +620,7 @@ const convert = file => {
 
             const externalDos = `function externalDosInit() {
 
-          g_externalDos = \`\r\n${g_rawData}\r\n|adjustment=0|\r\n|titlesize=|\r\n|musicUrl=nosound.mp3|
+          g_externalDos = \`\r\n${g_rawData}\r\n|adjustment=0|\r\n|titlesize=|\r\n|musicUrl=${g_nameObj.music}|
           \`;\r\n\}
         `;
             file = new Blob([externalDos], {
@@ -609,7 +630,7 @@ const convert = file => {
             // 見えないダウンロードリンクを作る
             a = document.createElement('a');
             a.href = URL.createObjectURL(file);
-            a.download = `dos_js.txt`;
+            a.download = `${g_nameObj.dos}`;
             a.style.display = 'none';
 
         } else {
@@ -621,7 +642,7 @@ const convert = file => {
             // 見えないダウンロードリンクを作る
             a = document.createElement('a');
             a.href = URL.createObjectURL(file);
-            a.download = `danoni.html`;
+            a.download = `${g_nameObj.html}`;
             a.style.display = 'none';
         }
 

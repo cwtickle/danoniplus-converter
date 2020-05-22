@@ -29,6 +29,7 @@ const g_keyObj = {
 
 let g_colorFlg = `current`;
 let g_encodeFlg = `shift-jis`;
+let g_centerFlg = `center`;
 g_keyObj.cCom = [];
 g_keyObj.cComOld = [];
 g_keyObj.c5 = [];
@@ -344,6 +345,13 @@ const htmlConvert = (_dos) => {
     const prePos = findPos(_dos, `<pre>`, `</pre>`);
     const tablePos = findPos(_dos, `<table`, `</table>`);
 
+    let startCenterTag = ``;
+    let endCenterTag = ``;
+    if (g_centerFlg === `center`) {
+        startCenterTag = `<center>`;
+        endCenterTag = `</center>`;
+    }
+
     // <pre>タグの置換処理
     if (prePos[C_START] !== C_NOT_FOUND) {
 
@@ -357,9 +365,9 @@ const htmlConvert = (_dos) => {
         ) {
 
             html5Text = replaceStrOnce(html5Text, _dos,
-                [tablePos[C_START], tablePos[C_START] + `<table`.length], `</pre><center><table`);
+                [tablePos[C_START], tablePos[C_START] + `<table`.length], `${endCenterTag}</pre>${startCenterTag}<table`);
             html5Text = replaceStrOnce(html5Text, _dos,
-                [tablePos[C_END] - `</table>`.length, tablePos[C_END]], `</table></center><pre>`);
+                [tablePos[C_END] - `</table>`.length, tablePos[C_END]], `</table>${endCenterTag}<pre>${startCenterTag}`);
 
         } else if (checkAsc([prePos[C_START], objectPos[C_START], objectPos[C_END], prePos[C_END]])) {
 
@@ -570,6 +578,13 @@ const convert = file => {
         g_encodeFlg = `euc-jp`;
     } else if (encodeFlg[2].checked) {
         g_encodeFlg = `utf-8`;
+    }
+
+    const centerFlg = document.options.centerFlg;
+    if (centerFlg[0].checked) {
+        g_centerFlg = `center`;
+    } else if (centerFlg[1].checked) {
+        g_centerFlg = `left`;
     }
 
     const reader = new FileReader();

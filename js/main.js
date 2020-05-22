@@ -29,6 +29,7 @@ const g_keyObj = {
 
 let g_colorFlg = `current`;
 let g_encodeFlg = `shift-jis`;
+let g_centerFlg = `center`;
 g_keyObj.cCom = [];
 g_keyObj.cComOld = [];
 g_keyObj.c5 = [];
@@ -281,90 +282,168 @@ const main = () => {
     });
 }
 
+const C_START = 0;
+const C_END = 1;
+const C_NOT_FOUND = -1;
+
 // タグ検索
 const findPos = (_dos, _start, _end) => {
     const searchIndex = _dos.toLowerCase().indexOf(_start);
-    if (searchIndex !== -1) {
+    if (searchIndex !== C_NOT_FOUND) {
         const searchText = _dos.toLowerCase().slice(searchIndex);
         const searchLastIndex = searchText.indexOf(_end);
-        if (searchLastIndex !== -1) {
+        if (searchLastIndex !== C_NOT_FOUND) {
             return [searchIndex, searchIndex + searchLastIndex + _end.length];
         }
     }
-    return [-1, -1];
+    return [C_NOT_FOUND, C_NOT_FOUND];
+}
+
+// 昇順配列チェック
+const checkAsc = (_array) => {
+    let ascFlg = true;
+    for (let j = 0; j < _array.length - 1; j++) {
+        if (_array[j] >= _array[j + 1]) {
+            ascFlg = false;
+            break;
+        }
+    }
+    return ascFlg;
 }
 
 // 旧記述を新記述へ置換
 const replaceStr = (_str, _org, _terms, _replaceStr) =>
-    _str.split(_org.slice(_terms[0], _terms[1])).join(_replaceStr);
+    _str.split(_org.slice(_terms[C_START], _terms[C_END])).join(_replaceStr);
+
+// 最初のみ置換、残りはそのまま
+const replaceStrOnce = (_str, _org, _terms, _replaceStr) => {
+    const splitStr = _org.slice(_terms[C_START], _terms[C_END]);
+    const tempArray = _str.split(splitStr);
+    let convertStr = `${tempArray[0]}${_replaceStr}`;
+    for (let j = 1; j < tempArray.length - 1; j++) {
+        convertStr += `${tempArray[j]}${splitStr}`;
+    }
+    convertStr += `${tempArray[tempArray.length - 1]}`;
+    return convertStr;
+}
+
+// HTMLファイルコンバート処理
+const htmlConvert = (_dos) => {
+
+    let html5Text = _dos;
+
+    // タグ一括検索
+    const embedPos = findPos(_dos, `<embed `, `>`);
+    const objectPos = findPos(_dos, `<object`, `</object>`);
+    const html5Pos = findPos(_dos, `<!doctype html`, `>`);
+    const headPos = findPos(_dos, `<head>`, `</head>`);
+    const headStartPos = findPos(_dos, `<head`, `>`);
+    const headEndPos = findPos(_dos, `</head`, `>`);
+    const embedEndPos = findPos(_dos, `</embed`, `>`);
+    const metaPos = findPos(_dos, `<meta `, `>`);
+
+    const prePos = findPos(_dos, `<pre>`, `</pre>`);
+    const tablePos = findPos(_dos, `<table`, `</table>`);
+
+    let startCenterTag = ``;
+    let endCenterTag = ``;
+    if (g_centerFlg === `center`) {
+        startCenterTag = `<center>`;
+        endCenterTag = `</center>`;
+    }
+
+    // <pre>タグの置換処理
+    if (prePos[C_START] !== C_NOT_FOUND) {
+
+        if (
+            checkAsc(
+                [prePos[C_START], tablePos[C_START], objectPos[C_START], objectPos[C_END], tablePos[C_END], prePos[C_END]]
+            ) ||
+            checkAsc(
+                [prePos[C_START], tablePos[C_START], embedPos[C_START], embedPos[C_END], tablePos[C_END], prePos[C_END]]
+            )
+        ) {
+
+            html5Text = replaceStrOnce(html5Text, _dos,
+                [tablePos[C_START], tablePos[C_START] + `<table`.length], `${endCenterTag}</pre>${startCenterTag}<table`);
+            html5Text = replaceStrOnce(html5Text, _dos,
+                [tablePos[C_END] - `</table>`.length, tablePos[C_END]], `</table>${endCenterTag}<pre>${startCenterTag}`);
+
+        } else if (checkAsc([prePos[C_START], objectPos[C_START], objectPos[C_END], prePos[C_END]])) {
+
+            html5Text = replaceStr(html5Text, _dos,
+                [objectPos[C_START], objectPos[C_START] + `<object`.length], `</pre><object`);
+            html5Text = replaceStr(html5Text, _dos,
+                [objectPos[C_END] - `</object>`.length, objectPos[C_END]], `</object><pre>`);
+
+        } else if (checkAsc([prePos[C_START], embedPos[C_START], embedPos[C_END], prePos[C_END]])) {
+
+            html5Text = replaceStr(html5Text, _dos,
+                [embedPos[C_START], embedPos[C_START] + `<embed`.length], `</pre><embed`);
+            html5Text = replaceStr(html5Text, _dos,
+                [embedPos[C_END] - `>`.length, embedPos[C_END]], `><pre>`);
+        }
+
+    }
+
+    const html5Doc = `<!DOCTYPE html>
+            `;
+    const html5Key = `
+            <input type="hidden" name="externalDos" id="externalDos" value="dos_js.txt">
+            <div id="canvas-frame" style="width:600px"></div>
+                `;
+    const mainjs = `
+            <script src="../js/danoni_main.js" charset="UTF-8"></script>
+            <link rel="stylesheet" type="text/css" href="../css/danoni_main.css">
+        </head>
+                `;
+    const meta = `<meta charset="utf-8">`;
+    const metaWithHeader = `<head>
+            ${meta}`;
+    const mainjsWithHeader = `${metaWithHeader}
+            <title>Dancing Onigiri</title>
+            ${mainjs}`;
+
+    // embedタグ、objectタグを変換
+    if (objectPos[C_START] !== C_NOT_FOUND) {
+        html5Text = replaceStr(html5Text, _dos, objectPos, html5Key);
+    } else if (embedPos[C_START] !== C_NOT_FOUND) {
+        html5Text = replaceStr(html5Text, _dos, embedPos, html5Key);
+        if (embedEndPos[C_START] !== C_NOT_FOUND) {
+            html5Text = replaceStr(html5Text, _dos, embedEndPos, ``);
+        }
+    }
+
+    // header内のmetaタグをutf-8に変換し、scriptタグ、linkタグを追加
+    if (headPos[C_START] !== C_NOT_FOUND) {
+        html5Text = replaceStr(html5Text, _dos, headEndPos, mainjs);
+        if (metaPos[C_START] !== C_NOT_FOUND) {
+            html5Text = replaceStr(html5Text, _dos, metaPos, meta);
+        } else {
+            html5Text = replaceStr(html5Text, _dos, headStartPos, metaWithHeader);
+        }
+    } else {
+        html5Text = `${mainjsWithHeader}${html5Text}`;
+    }
+
+    // HTML5用のDOCTYPEに置き換え
+    if (html5Pos[C_START] !== C_NOT_FOUND) {
+        html5Text = replaceStr(html5Text, _dos, html5Pos, html5Doc);
+    } else {
+        html5Text = `${html5Doc}${html5Text}`;
+    }
+    g_rawData += html5Text;
+
+    return html5Text;
+}
 
 // ファイルよりdos分解
 const dosConvert = (_dos) => {
     g_rawData = ``;
     const obj = {};
 
-    if (findPos(_dos, `<h`, `>`)[0] !== -1) {
-
-        // embedタグを探して一括置き換え
-        const embedPos = findPos(_dos, `<embed `, `>`);
-        const objectPos = findPos(_dos, `<object`, `</object>`);
-        const html5Pos = findPos(_dos, `<!doctype html`, `>`);
-        const headPos = findPos(_dos, `<head>`, `</head>`);
-        const headStartPos = findPos(_dos, `<head`, `>`);
-        const headEndPos = findPos(_dos, `</head`, `>`);
-        const embedEndPos = findPos(_dos, `</embed`, `>`);
-        const metaPos = findPos(_dos, `<meta `, `>`);
-
-        const html5Doc = `<!DOCTYPE html>
-            `;
-        const html5Key = `
-            <input type="hidden" name="externalDos" id="externalDos" value="dos_js.txt">
-            <div id="canvas-frame" style="width:600px"></div>
-                `;
-        const mainjs = `
-            <script src="../js/danoni_main.js" charset="UTF-8"></script>
-            <link rel="stylesheet" type="text/css" href="../css/danoni_main.css">
-        </head>
-                `;
-        const meta = `<meta charset="utf-8">`;
-        const metaWithHeader = `<head>
-            ${meta}`;
-        const mainjsWithHeader = `${metaWithHeader}
-            <title>Dancing Onigiri</title>
-            ${mainjs}`;
-
-        obj.html5Text = _dos;
-
-        // embedタグ、objectタグを変換
-        if (objectPos[0] !== -1) {
-            obj.html5Text = replaceStr(obj.html5Text, _dos, objectPos, html5Key);
-        } else if (embedPos[0] !== -1) {
-            obj.html5Text = replaceStr(obj.html5Text, _dos, embedPos, html5Key);
-            if (embedEndPos[0] !== -1) {
-                obj.html5Text = replaceStr(obj.html5Text, _dos, embedEndPos, ``);
-            }
-        }
-
-        // header内のmetaタグをutf-8に変換し、scriptタグ、linkタグを追加
-        if (headPos[0] !== -1) {
-            obj.html5Text = replaceStr(obj.html5Text, _dos, headEndPos, mainjs);
-            if (metaPos[0] !== -1) {
-                obj.html5Text = replaceStr(obj.html5Text, _dos, metaPos, meta);
-            } else {
-                obj.html5Text = replaceStr(obj.html5Text, _dos, headStartPos, mainjsWithHeader);
-            }
-        } else {
-            obj.html5Text = `${mainjsWithHeader}${obj.html5Text}`;
-        }
-
-        // HTML5用のDOCTYPEに置き換え
-        if (html5Pos[0] !== -1) {
-            obj.html5Text = obj.html5Text.split(_dos.slice(html5Pos[0], html5Pos[1])).join(html5Doc);
-        } else {
-            obj.html5Text = `${html5Doc}${obj.html5Text}`;
-        }
-        g_rawData += obj.html5Text;
-
+    if (findPos(_dos, `<h`, `>`)[C_START] !== C_NOT_FOUND) {
+        obj.html5Text = htmlConvert(_dos);
     } else {
         const params = _dos.split(`&`);
         for (let j = 0; j < params.length; j++) {
@@ -499,6 +578,13 @@ const convert = file => {
         g_encodeFlg = `euc-jp`;
     } else if (encodeFlg[2].checked) {
         g_encodeFlg = `utf-8`;
+    }
+
+    const centerFlg = document.options.centerFlg;
+    if (centerFlg[0].checked) {
+        g_centerFlg = `center`;
+    } else if (centerFlg[1].checked) {
+        g_centerFlg = `left`;
     }
 
     const reader = new FileReader();

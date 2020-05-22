@@ -407,9 +407,9 @@ const htmlConvert = (_dos) => {
     }
 
     // header内のmetaタグをutf-8に変換し、scriptタグ、linkタグを追加
-    if (headPos[0] !== C_NOT_FOUND) {
+    if (headPos[C_START] !== C_NOT_FOUND) {
         html5Text = replaceStr(html5Text, _dos, headEndPos, mainjs);
-        if (metaPos[0] !== C_NOT_FOUND) {
+        if (metaPos[C_START] !== C_NOT_FOUND) {
             html5Text = replaceStr(html5Text, _dos, metaPos, meta);
         } else {
             html5Text = replaceStr(html5Text, _dos, headStartPos, metaWithHeader);
@@ -419,8 +419,8 @@ const htmlConvert = (_dos) => {
     }
 
     // HTML5用のDOCTYPEに置き換え
-    if (html5Pos[0] !== C_NOT_FOUND) {
-        html5Text = html5Text.split(_dos.slice(html5Pos[0], html5Pos[1])).join(html5Doc);
+    if (html5Pos[C_START] !== C_NOT_FOUND) {
+        html5Text = replaceStr(html5Text, _dos, html5Pos, html5Doc);
     } else {
         html5Text = `${html5Doc}${html5Text}`;
     }

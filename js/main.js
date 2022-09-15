@@ -346,7 +346,10 @@ const htmlConvert = (_dos) => {
     const headStartPos = findPos(_dos, `<head`, `>`);
     const headEndPos = findPos(_dos, `</head`, `>`);
     const embedEndPos = findPos(_dos, `</embed`, `>`);
-    const metaPos = findPos(_dos, `<meta `, `>`);
+
+    const metaCTPos = findPos(_dos, `<meta http-equiv=\"content-type\"`, `>`);
+    const metaCScriptPos = findPos(_dos, `<meta http-equiv=\"content-script-type\"`, `>`);
+    const metaCStylePos = findPos(_dos, `<meta http-equiv=\"content-style-type\"`, `>`);
 
     const prePos = findPos(_dos, `<pre>`, `</pre>`);
     const tablePos = findPos(_dos, `<table`, `</table>`);
@@ -396,11 +399,10 @@ const htmlConvert = (_dos) => {
             `;
     const html5Key = `
             <input type="hidden" name="externalDos" id="externalDos" value="${g_nameObj.dos}">
-            <div id="canvas-frame" style="width:600px"></div>
+            <div id="canvas-frame"></div>
                 `;
     const mainjs = `
             <script src="../js/danoni_main.js" charset="UTF-8"></script>
-            <link rel="stylesheet" type="text/css" href="../css/danoni_main.css">
         </head>
                 `;
     const meta = `<meta charset="utf-8">`;
@@ -423,8 +425,10 @@ const htmlConvert = (_dos) => {
     // header内のmetaタグをutf-8に変換し、scriptタグ、linkタグを追加
     if (headPos[C_START] !== C_NOT_FOUND) {
         html5Text = replaceStr(html5Text, _dos, headEndPos, mainjs);
-        if (metaPos[C_START] !== C_NOT_FOUND) {
-            html5Text = replaceStr(html5Text, _dos, metaPos, meta);
+        if (metaCTPos[C_START] !== C_NOT_FOUND) {
+            html5Text = replaceStr(html5Text, _dos, metaCScriptPos, ``);
+            html5Text = replaceStr(html5Text, _dos, metaCStylePos, ``);
+            html5Text = replaceStr(html5Text, _dos, metaCTPos, meta);
         } else {
             html5Text = replaceStr(html5Text, _dos, headStartPos, metaWithHeader);
         }

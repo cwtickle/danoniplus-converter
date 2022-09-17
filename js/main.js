@@ -479,11 +479,16 @@ const dosConvert = (_dos) => {
 
 // カラーNoの変換
 const convertColorNo = (_key, _no) => {
-    if (g_colorFlg === `current`) {
-        return (_no < 20 ? g_keyObj[`c${_key}`][_no] : g_keyObj.cCom[_no]);
-    } else {
-        return (_no < 11 ? g_keyObj[`c${_key}`][_no] : g_keyObj.cComOld[_no]);
-    }
+    const obj = {
+        current: {
+            arrowlim: 20, dColorName: `cCom`,
+        },
+        old: {
+            arrowlim: 11, dColorName: `cComOld`,
+        },
+    };
+    return (_no < obj[g_colorFlg].arrowlim ?
+        g_keyObj[`c${_key}`][_no] : g_keyObj[obj[g_colorFlg].dColorName][_no]);
 }
 
 // 抽出したデータのみ変換処理を掛ける
@@ -522,95 +527,68 @@ const convertHeader = (_rootObj) => {
         g_rawData += `|`;
     }
 
+    // 色変化データの変換
+    const convertColorData = (_scoreId, _header = ``) => {
+        let rawData = ``;
+        const id = (_scoreId === 0 ? `` : (_scoreId + 1));
+        const dataName = `${_header}color${id}_data`;
+        if (_rootObj[dataName] !== undefined) {
+            rawData += `|${dataName}=\r\n`;
+
+            const tmpArrayData = _rootObj[dataName].split(`\r`).join(`\n`).split(`\n`);
+            tmpArrayData.forEach(tmpData => {
+                if (tmpData !== undefined && tmpData !== ``) {
+                    const tmpColorData = tmpData.split(`,`);
+                    for (let k = 0; k < tmpColorData.length; k += 3) {
+                        if (isNaN(parseInt(tmpColorData[k]))) {
+                            continue;
+                        }
+                        rawData += `${tmpColorData[k]},${convertColorNo(obj.keyLabels[_scoreId], parseFloat(tmpColorData[k + 1]))},${tmpColorData[k + 2].replace(`0x`, `#`)}\r\n`;
+                    }
+                }
+            });
+
+            rawData += `|`;
+        }
+        return rawData;
+    };
+
+    // 色変化データの変換
     for (let j = 0; j < difs.length; j++) {
-        const idHeader = (j === 0 ? `` : (j + 1));
-
-        // 個別色変化
-        if (_rootObj[`color${idHeader}_data`] !== undefined) {
-            g_rawData += `|color${idHeader}_data=\r\n`;
-
-            let tmpArrayData = _rootObj[`color${idHeader}_data`].split(`\r`).join(`\n`);
-            tmpArrayData = tmpArrayData.split(`\n`);
-            tmpArrayData.forEach(tmpData => {
-                if (tmpData !== undefined && tmpData !== ``) {
-                    const tmpColorData = tmpData.split(`,`);
-                    for (let k = 0; k < tmpColorData.length; k += 3) {
-                        if (isNaN(parseInt(tmpColorData[k]))) {
-                            continue;
-                        }
-
-                        g_rawData += `${tmpColorData[k]},${convertColorNo(obj.keyLabels[j], parseFloat(tmpColorData[k + 1]))},${tmpColorData[k + 2].replace(`0x`, `#`)}\r\n`;
-                    }
-                }
-            });
-
-            g_rawData += `|`;
-        }
-
-        // 全体色変化
-        if (_rootObj[`acolor${idHeader}_data`] !== undefined) {
-            g_rawData += `|acolor${idHeader}_data=\r\n`;
-
-            let tmpArrayData = _rootObj[`acolor${idHeader}_data`].split(`\r`).join(`\n`);
-            tmpArrayData = tmpArrayData.split(`\n`);
-            tmpArrayData.forEach(tmpData => {
-                if (tmpData !== undefined && tmpData !== ``) {
-                    const tmpColorData = tmpData.split(`,`);
-                    for (let k = 0; k < tmpColorData.length; k += 3) {
-                        if (isNaN(parseInt(tmpColorData[k]))) {
-                            continue;
-                        }
-
-                        g_rawData += `${tmpColorData[k]},${convertColorNo(obj.keyLabels[j], parseFloat(tmpColorData[k + 1]))},${tmpColorData[k + 2].replace(`0x`, `#`)}\r\n`;
-                    }
-                }
-            });
-
-            g_rawData += `|`;
-        }
+        g_rawData += convertColorData(j);
+        g_rawData += convertColorData(j, `a`);
     }
     g_rawData = g_rawData.replace(/'/g, `&#39;`);
 }
 
 // ファイルごとの変換処理
 const convert = file => {
-    const colorFlg = document.options.colorFlg;
-    if (colorFlg[0].checked) {
-        g_colorFlg = `current`;
-    } else if (colorFlg[1].checked) {
-        g_colorFlg = `old`;
-    }
 
-    const encodeFlg = document.options.encodeFlg;
-    if (encodeFlg[0].checked) {
-        g_encodeFlg = `shift-jis`;
-    } else if (encodeFlg[1].checked) {
-        g_encodeFlg = `euc-jp`;
-    } else if (encodeFlg[2].checked) {
-        g_encodeFlg = `utf-8`;
-    }
+    const selectFromList = (_options, _list) => {
+        let itemNo = 0;
+        Array.from(_options).forEach((option, j) => {
+            if (option.checked) {
+                itemNo = j;
+                return;
+            }
+        });
+        return _list[itemNo];
+    };
 
-    const centerFlg = document.options.centerFlg;
-    if (centerFlg[0].checked) {
-        g_centerFlg = `center`;
-    } else if (centerFlg[1].checked) {
-        g_centerFlg = `left`;
-    }
+    const colorFlgList = [`current`, `old`];
+    g_colorFlg = selectFromList(document.options.colorFlg, colorFlgList);
 
-    if (document.querySelector(`#htmlName`).value !== ``) {
-        g_nameObj.html = `${document.querySelector(`#htmlName`).value}.html`;
-    }
-    if (document.querySelector(`#dosName`).value !== ``) {
-        g_nameObj.dos = `${document.querySelector(`#dosName`).value}.txt`;
-    }
-    if (document.querySelector(`#musicName`).value !== ``) {
-        g_nameObj.music = `${document.querySelector(`#musicName`).value}.`;
-        if (document.querySelector(`#musicExtension`).value !== ``) {
-            g_nameObj.music += `${document.querySelector(`#musicExtension`).value}`;
-        } else {
-            g_nameObj.music += `mp3`;
-        }
-    }
+    const encodeFlgList = [`shift-jis`, `euc-jp`, `utf-8`];
+    g_encodeFlg = selectFromList(document.options.encodeFlg, encodeFlgList);
+
+    const centerFlgList = [`center`, `left`];
+    g_centerFlg = selectFromList(document.options.centerFlg, centerFlgList);
+
+    g_nameObj.html = `${document.querySelector(`#htmlName`).value || 'danoni'}.html`;
+    g_nameObj.dos = `${document.querySelector(`#dosName`).value || 'dos_js'}.txt`;
+
+    g_nameObj.music = `${document.querySelector(`#musicName`).value || 'nosound'}.`;
+    g_nameObj.music += `${document.querySelector(`#musicExtension`).value || 'mp3'}`;
 
     const reader = new FileReader();
 
